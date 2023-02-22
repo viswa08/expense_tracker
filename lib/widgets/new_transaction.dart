@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
 import 'transaction_list.dart';
-import 'user_transaction.dart';
 
-class NewTransaction extends StatelessWidget {
+class NewTransaction extends StatefulWidget {
   final Function addTransactionfn;
   NewTransaction(this.addTransactionfn);
 
+  @override
+  State<NewTransaction> createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
   final titleController = TextEditingController();
+
   final amountController = TextEditingController();
 
   //function to add transaction
-  void addTransation() {
-    addTransactionfn(titleController.text, double.parse(amountController.text));
+  void submitData() {
+    final enteredTitle = titleController.text;
+    final enteredAmount = double.parse(amountController.text);
+
+    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+      return;
+    }
+
+    widget.addTransactionfn(
+      enteredTitle,
+      enteredAmount,
+    );
+    Navigator.of(context).pop();
   }
 
   @override
@@ -27,12 +43,7 @@ class NewTransaction extends StatelessWidget {
               controller: titleController,
               decoration: InputDecoration(labelText: 'Title'),
               textInputAction: TextInputAction.done,
-              onSubmitted: (value) {
-                if (titleController.text.isNotEmpty &&
-                    amountController.text.isNotEmpty) {
-                  addTransation();
-                }
-              },
+              onSubmitted: (value) => submitData(),
             ),
           ),
           Padding(
@@ -42,19 +53,11 @@ class NewTransaction extends StatelessWidget {
               controller: amountController,
               decoration: InputDecoration(labelText: 'Amount'),
               textInputAction: TextInputAction.done,
-              onSubmitted: (value) {
-                if (titleController.text.isNotEmpty &&
-                    amountController.text.isNotEmpty) {
-                  addTransation();
-                }
-              },
+              onSubmitted: (value) => submitData(),
             ),
           ),
           TextButton(
-            onPressed: () {
-              print(titleController.text);
-              addTransation();
-            },
+            onPressed: submitData,
             child: const Text(
               'Add Transaction',
               style: TextStyle(color: Colors.purple),
